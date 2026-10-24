@@ -1,0 +1,166 @@
+{
+  "entities": {
+    "Category": {
+      "title": "Category",
+      "description": "A top-level category grouping discussion forums on the board.",
+      "type": "object",
+      "properties": {
+        "slug": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 300 },
+        "order": { "type": "number" },
+        "forumIds": { "type": "array" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["slug", "name", "order"]
+    },
+    "Forum": {
+      "title": "Forum",
+      "description": "A discussion board within a category managed by a Forum Moderator.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "categorySlug": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "minLength": 3, "maxLength": 40 },
+        "description": { "type": "string", "maxLength": 300 },
+        "creator": { "type": "string" },
+        "creatorName": { "type": "string" },
+        "creatorClass": { "type": "string" },
+        "topicCount": { "type": "number" },
+        "lastPostAt": { "type": "string" },
+        "lastPostTitle": { "type": "string" },
+        "lastPostUser": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "categorySlug", "name"]
+    },
+    "Topic": {
+      "title": "Topic",
+      "description": "A discussion thread initiated by a registered member or guest.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "forumId": { "type": "string", "maxLength": 64 },
+        "categorySlug": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "minLength": 3, "maxLength": 120 },
+        "body": { "type": "string", "minLength": 1, "maxLength": 5000 },
+        "images": { "type": "array" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorClass": { "type": "string" },
+        "isGuest": { "type": "boolean" },
+        "replyCount": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "lastPostAt": { "type": "string" }
+      },
+      "required": ["id", "forumId", "title", "body", "authorName"]
+    },
+    "Reply": {
+      "title": "Reply",
+      "description": "A reply to an existing forum topic.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "topicId": { "type": "string", "maxLength": 64 },
+        "body": { "type": "string", "minLength": 1, "maxLength": 5000 },
+        "images": { "type": "array" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorClass": { "type": "string" },
+        "isGuest": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "topicId", "body", "authorName"]
+    },
+    "User": {
+      "title": "User",
+      "description": "A registered member character profile.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string", "minLength": 3, "maxLength": 20 },
+        "usernameLower": { "type": "string" },
+        "passwordHash": { "type": "string" },
+        "wowClass": { "type": "string" },
+        "postCount": { "type": "number" },
+        "topicCount": { "type": "number" },
+        "buddyList": { "type": "array" },
+        "failedAttempts": { "type": "number" },
+        "lockoutUntil": { "type": "string" },
+        "joinedAt": { "type": "string" },
+        "lastActiveAt": { "type": "string" }
+      },
+      "required": ["id", "username", "usernameLower", "passwordHash", "wowClass"]
+    },
+    "UsernameIndex": {
+      "title": "UsernameIndex",
+      "description": "Unique username registry indexed by lowercase username.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId"]
+    },
+    "Session": {
+      "title": "Session",
+      "description": "Active session token hash for registered users.",
+      "type": "object",
+      "properties": {
+        "tokenHash": { "type": "string" },
+        "userId": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "expiresAt": { "type": "string" }
+      },
+      "required": ["tokenHash", "userId", "expiresAt"]
+    },
+    "Guest": {
+      "title": "Guest",
+      "description": "Guest session token hash and identity.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "guestNumber": { "type": "number" },
+        "username": { "type": "string" },
+        "isGuest": { "type": "boolean" },
+        "lastPostAt": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "username", "isGuest"]
+    }
+  },
+  "firestore": {
+    "/categories/{slug}": {
+      "schema": "Category",
+      "description": "Top-level board categories."
+    },
+    "/forums/{forumId}": {
+      "schema": "Forum",
+      "description": "Individual forums within categories."
+    },
+    "/topics/{topicId}": {
+      "schema": "Topic",
+      "description": "Discussion topics created in forums."
+    },
+    "/replies/{replyId}": {
+      "schema": "Reply",
+      "description": "Replies posted within topics."
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Registered member accounts."
+    },
+    "/usernames/{usernameLower}": {
+      "schema": "UsernameIndex",
+      "description": "Case-insensitive unique username document registry."
+    },
+    "/sessions/{tokenHash}": {
+      "schema": "Session",
+      "description": "Active session tokens indexed by SHA-256 hash."
+    },
+    "/guests/{tokenHash}": {
+      "schema": "Guest",
+      "description": "Guest visitor records and rate-limiting cooldowns."
+    }
+  }
+}
